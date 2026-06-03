@@ -1,4 +1,5 @@
-# temporários de extração do docx
+# material local / enunciado
+*.docx
 _docx_extract/
 _docx_*.txt
 _temp.zip

@@ -1,6 +1,6 @@
 # Pipeline E-commerce · RotaExpress
 
-Landing page institucional da **RotaExpress** com pipeline de entrega contínua, containerização e hospedagem em nuvem AWS. Projeto acadêmico — **Case 4** (Logística · E-commerce · Indústria 4.0).
+Landing page institucional da **RotaExpress** com pipeline de entrega contínua, containerização e hospedagem em nuvem AWS.
 
 [![CI/CD](https://github.com/PedroVazN/Pipeline-E-commerce/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/PedroVazN/Pipeline-E-commerce/actions/workflows/ci-cd.yml)
 
@@ -10,14 +10,13 @@ Landing page institucional da **RotaExpress** com pipeline de entrega contínua,
 
 ## Sobre o projeto
 
-A RotaExpress é uma operadora logística de fulfillment e última milha. Este repositório concentra a **one-page** de apresentação comercial e a **esteira DevOps** que publica, valida e implanta a aplicação de forma automatizada.
+A RotaExpress é uma operadora logística de fulfillment e última milha. Este repositório concentra a **one-page** de apresentação comercial e a **esteira DevOps** que valida a aplicação em cada alteração de código.
 
-O cenário do case exige disponibilidade em picos de tráfego (campanhas, Black Friday) e uso eficiente de recursos em períodos de baixa demanda — resolvido com infraestrutura elástica na AWS, imagem Docker reproduzível e GitHub Actions como orquestrador de CI/CD.
+A infraestrutura combina Amazon EC2, imagem Docker reproduzível e GitHub Actions para integração contínua, com suporte a múltiplas instâncias e balanceamento de carga.
 
 | Atributo | Descrição |
 |----------|-----------|
 | **Case** | 4 — Logística · E-commerce |
-| **Setor** | Fulfillment, marketplaces, última milha |
 | **Stack** | HTML estático · Nginx · Docker · Amazon EC2 · GitHub Actions |
 | **Página** | `index.html` — site responsivo RotaExpress |
 
@@ -51,22 +50,22 @@ flowchart TB
   subgraph aws [AWS]
     EC2[Amazon EC2]
     ALB[Application Load Balancer]
-    Dev -->|deploy manual SSH| EC2
+    Dev -->|deploy SSH| EC2
     Users[Usuários] --> ALB
     ALB --> EC2
   end
 ```
 
-### Serviços e responsabilidades
+### Serviços
 
 | Componente | Função |
-|------------|--------|
-| **Amazon EC2** | Hospeda o container com a one-page (IaaS) |
-| **Docker** | Empacota Nginx + aplicação estática de forma portável |
-| **GitHub** | Controle de versão, revisão em dupla e rastreabilidade |
-| **GitHub Actions** | Integração contínua — build e teste da imagem Docker |
+|------------|------|
+| **Amazon EC2** | Hospeda o container com a one-page |
+| **Docker** | Empacota Nginx e a aplicação estática |
+| **GitHub** | Controle de versão e revisão de código |
+| **GitHub Actions** | Build e teste automatizados da imagem |
 
-Cada instância expõe um **rótulo de servidor** (`web-srv-01`, `web-srv-02`, …) no rodapé da página, permitindo validar balanceamento e múltiplos nós atrás de um load balancer.
+Cada instância pode expor um rótulo (`web-srv-01`, `web-srv-02`, …) no rodapé da página para identificação em ambientes com load balancer.
 
 ---
 
@@ -76,12 +75,10 @@ Workflow: [`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml)
 
 | Estágio | Gatilho | Ação |
 |---------|---------|------|
-| **CI — Build** | Push ou Pull Request em `main` | `docker build` da imagem de produção |
-| **CI — Test** | Após build | Sobe container efêmero e valida HTTP 200 + conteúdo |
+| **Build** | Push ou Pull Request em `main` | `docker build` da imagem |
+| **Test** | Após build | Container efêmero + validação HTTP |
 
-A publicação na EC2 é feita **manualmente via SSH** (ver [GUIA-IMPLEMENTACAO.md](GUIA-IMPLEMENTACAO.md)).
-
-Revisões de código são solicitadas automaticamente para [@NathanSec](https://github.com/NathanSec) via [CODEOWNERS](.github/CODEOWNERS).
+Revisões solicitadas para [@NathanSec](https://github.com/NathanSec) via [CODEOWNERS](.github/CODEOWNERS).
 
 ---
 
@@ -89,27 +86,24 @@ Revisões de código são solicitadas automaticamente para [@NathanSec](https://
 
 ```
 .
-├── index.html                 # One-page RotaExpress
-├── Dockerfile                 # Imagem Nginx + site
-├── docker-entrypoint.sh       # Injeta INSTANCE_LABEL no deploy
-├── .github/
-│   ├── workflows/ci-cd.yml    # Pipeline CI/CD
-│   └── CODEOWNERS             # Revisor padrão
-└── scripts/                   # Utilitários locais
+├── index.html
+├── Dockerfile
+├── docker-entrypoint.sh
+└── .github/
+    ├── workflows/ci-cd.yml
+    └── CODEOWNERS
 ```
 
 ---
 
 ## Execução local
 
-Requisitos: [Docker](https://www.docker.com/products/docker-desktop/)
-
 ```bash
 docker build -t rotaexpress-onepage .
 docker run -d -p 8080:80 -e INSTANCE_LABEL=web-srv-local rotaexpress-onepage
 ```
 
-Aplicação disponível em `http://localhost:8080`.
+Aplicação em `http://localhost:8080`.
 
 ---
 
@@ -117,18 +111,18 @@ Aplicação disponível em `http://localhost:8080`.
 
 | Variável | Descrição | Padrão |
 |----------|-----------|--------|
-| `INSTANCE_LABEL` | Identificador exibido no rodapé da página | `web-srv-01` |
+| `INSTANCE_LABEL` | Identificador no rodapé da página | `web-srv-01` |
 
-Configurável no build (`--build-arg`) ou em runtime (`-e`) no Docker e na EC2.
-
----
-
-## Documentação operacional
-
-Instruções detalhadas de implementação (AWS, GitHub, evidências do trabalho e entrega): **[GUIA-IMPLEMENTACAO.md](GUIA-IMPLEMENTACAO.md)**
+Definir no build (`--build-arg`) ou em runtime (`-e`).
 
 ---
 
-## Licença e contexto acadêmico
+## Deploy na EC2
 
-Projeto desenvolvido para a disciplina de publicação em nuvem (DevOps / AWS). Uso restrito ao contexto educacional da dupla.
+```bash
+git clone https://github.com/PedroVazN/Pipeline-E-commerce.git
+cd Pipeline-E-commerce
+export INSTANCE_LABEL=web-srv-01
+docker build --build-arg INSTANCE_LABEL=$INSTANCE_LABEL -t rotaexpress-onepage .
+docker run -d --name rotaexpress -p 80:80 -e INSTANCE_LABEL=$INSTANCE_LABEL rotaexpress-onepage
+```
