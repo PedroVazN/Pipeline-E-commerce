@@ -173,51 +173,41 @@ No GitHub: criar **Pull Request** → Nathan **aprova** → **Merge**.
 
 ## Fase 3 — GitHub Actions / CI/CD (40%)
 
-**Objetivo:** pipeline automático descrevendo CI/CD.
+**Objetivo:** pipeline automático descrevendo CI/CD (integração contínua).
 
 Arquivo do workflow: `.github/workflows/ci-cd.yml`
 
-### 3.1 — Secrets no GitHub
+O pipeline valida **build + teste** da imagem Docker em todo PR e push em `main`. A EC2 já foi publicada manualmente na Fase 1 (não há job de deploy no Actions).
 
-**Settings** → **Secrets and variables** → **Actions** → **New repository secret**:
+### 3.1 — Disparar o pipeline
 
-| Nome | Conteúdo |
-|------|----------|
-| `EC2_HOST` | IP público da EC2 (ex.: `3.XXX.XXX.XXX`) |
-| `EC2_USER` | `ec2-user` |
-| `EC2_SSH_KEY` | Conteúdo **inteiro** do arquivo `.pem` |
-
-### 3.2 — Preparar EC2 para deploy automático
-
-Na EC2 (mesmo caminho que o workflow usa):
-
-```bash
-mkdir -p ~/rotaexpress
-cd ~/rotaexpress
-git clone https://github.com/PedroVazN/Pipeline-E-commerce.git .
-# ou: git clone ... . dentro de rotaexpress
-```
-
-### 3.3 — Disparar o pipeline
-
-1. Merge um PR em `main` (ou push direto se ainda sem proteção)  
+1. Merge um PR em `main` (ou push em `main`)  
 2. Aba **Actions** → workflow **CI/CD RotaExpress**  
 
-Jobs esperados:
+Job esperado:
 
 | Job | Quando | O que faz |
 |-----|--------|-----------|
-| **Build e teste Docker** | PR e push | Build + teste HTTP |
-| **Deploy na EC2** | Só push em `main` | SSH + docker rebuild na EC2 |
+| **Build e teste Docker** | PR e push em `main` | `docker build` + teste HTTP com `curl` |
 
-### 3.4 — Evidências
+### 3.2 — Evidências
 
-- [ ] Print do workflow (diagrama dos jobs)  
-- [ ] Print de uma execução **verde** com logs do build  
+- [ ] Print do workflow (job **Build e teste Docker**)  
+- [ ] Print de uma execução **verde** com logs do build e do teste  
 - [ ] Print do histórico (lista de runs)  
-- [ ] (Bônus) Print do deploy concluído e site atualizado  
 
-> Sem secrets, **Build** roda e já vale parte da nota; **Deploy** falha até configurar SSH.
+### 3.3 — Atualizar a EC2 após mudanças no código (manual)
+
+Quando o código mudar no GitHub e quiser atualizar o site:
+
+```bash
+cd ~/Pipeline-E-commerce   # ou pasta onde clonou
+git pull origin main
+export INSTANCE_LABEL=web-srv-01
+docker build --build-arg INSTANCE_LABEL=$INSTANCE_LABEL -t rotaexpress-onepage .
+docker rm -f rotaexpress
+docker run -d --name rotaexpress -p 80:80 -e INSTANCE_LABEL=$INSTANCE_LABEL rotaexpress-onepage
+```
 
 ---
 
@@ -265,7 +255,7 @@ Abrir http://localhost:8080 — rodapé `web-srv-local`.
 1. Arquitetura (EC2, Docker, GitHub, Actions)  
 2. Site no ar (IP + rótulo da instância)  
 3. Repositório e PR com aprovação do Nathan  
-4. Pipeline executando (build + deploy)  
+4. Pipeline executando (build + teste Docker)  
 5. Dockerfile explicado brevemente  
 
 ### Pilares AWS (para relatório/vídeo)
@@ -273,7 +263,7 @@ Abrir http://localhost:8080 — rodapé `web-srv-local`.
 | Pilar | Onde aparece no projeto |
 |-------|-------------------------|
 | Excelência operacional | CI/CD, deploy repetível, PR review |
-| Segurança | Security Group, SSH, secrets no GitHub |
+| Segurança | Security Group, SSH com chave `.pem` |
 | Confiabilidade | ALB + múltiplas EC2 (opcional), health check |
 | Performance | Container Alpine + Nginx |
 | Otimização de custos | t2.micro, instâncias sob demanda |
@@ -294,9 +284,8 @@ Abrir http://localhost:8080 — rodapé `web-srv-local`.
 - [ ] Pelo menos 1 PR aprovado pelo Nathan  
 
 ### CI/CD
-- [ ] Secrets `EC2_HOST`, `EC2_USER`, `EC2_SSH_KEY`  
-- [ ] Workflow verde em PR  
-- [ ] Workflow verde em `main` com deploy  
+- [ ] Workflow verde em PR (Build e teste Docker)  
+- [ ] Workflow verde em `main`  
 
 ### Entrega
 - [ ] PDF com todas as evidências  
@@ -308,8 +297,7 @@ Abrir http://localhost:8080 — rodapé `web-srv-local`.
 
 1. **Fase 1** — EC2 + Docker + site no ar → print  
 2. **Fase 2** — PR com README/guia → Nathan aprova → print  
-3. **Secrets** — configurar na EC2 e no GitHub  
-4. **Fase 3** — merge em `main` → Actions verde → prints  
+3. **Fase 3** — merge em `main` → Actions verde (build + teste) → prints  
 5. **Fase 4** — prints Dockerfile + steps do Actions  
 6. **PDF + vídeo**  
 
@@ -338,8 +326,7 @@ docker run -d --name rotaexpress -p 80:80 -e INSTANCE_LABEL=web-srv-01 rotaexpre
 | Problema | Solução |
 |----------|---------|
 | Site não abre | Security Group porta 80; container rodando (`docker ps`) |
-| SSH falha no Actions | Secret `EC2_SSH_KEY` com `.pem` completo; IP correto em `EC2_HOST` |
-| Deploy falha | Pasta `~/rotaexpress` com clone do repo na EC2 |
+| Actions vermelho no build | Ver logs: erro no `docker build` ou teste `curl` |
 | Cursor como contribuidor | `git commit --amend` sem co-author; desativar co-author no Cursor Settings |
 | PR não pode mergear | Nathan precisa **Approve**; checks do Actions verdes |
 

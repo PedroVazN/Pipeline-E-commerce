@@ -51,7 +51,7 @@ flowchart TB
   subgraph aws [AWS]
     EC2[Amazon EC2]
     ALB[Application Load Balancer]
-    IMG -->|deploy SSH| EC2
+    Dev -->|deploy manual SSH| EC2
     Users[Usuários] --> ALB
     ALB --> EC2
   end
@@ -64,7 +64,7 @@ flowchart TB
 | **Amazon EC2** | Hospeda o container com a one-page (IaaS) |
 | **Docker** | Empacota Nginx + aplicação estática de forma portável |
 | **GitHub** | Controle de versão, revisão em dupla e rastreabilidade |
-| **GitHub Actions** | Integração contínua (build, teste) e entrega contínua (deploy) |
+| **GitHub Actions** | Integração contínua — build e teste da imagem Docker |
 
 Cada instância expõe um **rótulo de servidor** (`web-srv-01`, `web-srv-02`, …) no rodapé da página, permitindo validar balanceamento e múltiplos nós atrás de um load balancer.
 
@@ -78,7 +78,8 @@ Workflow: [`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml)
 |---------|---------|------|
 | **CI — Build** | Push ou Pull Request em `main` | `docker build` da imagem de produção |
 | **CI — Test** | Após build | Sobe container efêmero e valida HTTP 200 + conteúdo |
-| **CD — Deploy** | Push em `main` (após merge) | Deploy via SSH na EC2, rebuild e restart do container |
+
+A publicação na EC2 é feita **manualmente via SSH** (ver [GUIA-IMPLEMENTACAO.md](GUIA-IMPLEMENTACAO.md)).
 
 Revisões de código são solicitadas automaticamente para [@NathanSec](https://github.com/NathanSec) via [CODEOWNERS](.github/CODEOWNERS).
 
