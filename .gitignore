@@ -1,0 +1,15 @@
+# temporários de extração do docx
+_docx_extract/
+_docx_*.txt
+_temp.zip
+
+# SO / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# secrets locais (nunca commitar)
+.env
+*.pem
+*.ppk

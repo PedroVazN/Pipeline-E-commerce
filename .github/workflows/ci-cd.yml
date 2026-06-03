@@ -1,0 +1,50 @@
+name: CI/CD RotaExpress
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build e teste Docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build da imagem
+        run: docker build --build-arg INSTANCE_LABEL=web-srv-01 -t rotaexpress-onepage:${{ github.sha }} .
+
+      - name: Teste — container sobe e responde HTTP 200
+        run: |
+          docker run -d --name rotaexpress-test -p 8080:80 rotaexpress-onepage:${{ github.sha }}
+          sleep 2
+          curl -fsS http://localhost:8080/ | grep -q "RotaExpress"
+          curl -fsS http://localhost:8080/ | grep -q "web-srv-01"
+          docker rm -f rotaexpress-test
+
+  deploy:
+    name: Deploy na EC2 (opcional)
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+            cd ~/rotaexpress || mkdir -p ~/rotaexpress && cd ~/rotaexpress
+            git pull origin main 2>/dev/null || git pull origin master 2>/dev/null || true
+            docker build --build-arg INSTANCE_LABEL="${INSTANCE_LABEL:-web-srv-01}" -t rotaexpress-onepage:latest .
+            docker rm -f rotaexpress 2>/dev/null || true
+            docker run -d --name rotaexpress -p 80:80 \
+              -e INSTANCE_LABEL="${INSTANCE_LABEL:-web-srv-01}" \
+              rotaexpress-onepage:latest

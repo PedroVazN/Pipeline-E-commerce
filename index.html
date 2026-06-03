@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RotaExpress — Logística e Fulfillment em Alta Velocidade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1430; --navy2:#111d44; --blue:#2e7bff; --lime:#d7ff3e;
+    --txt:#eaf0ff; --mut:#9fadce; --line:#243156;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--navy);color:var(--txt);font-family:"Manrope",system-ui,sans-serif;line-height:1.62;overflow-x:hidden}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 30px}
+  h1,h2,h3,.dsp{font-family:"Sora",sans-serif;line-height:1.05;letter-spacing:-.02em}
+  a{color:inherit;text-decoration:none}
+  nav{position:sticky;top:0;z-index:20;background:rgba(11,20,48,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:72px}
+  .brand{display:flex;align-items:center;gap:10px;font-family:"Sora";font-weight:800;font-size:1.18rem}
+  .brand .ar{color:var(--lime)}
+  .nav-links{display:flex;gap:30px;font-size:.86rem;font-weight:600;color:var(--mut)}
+  .nav-links a:hover{color:var(--lime)}
+  @media(max-width:780px){.nav-links{display:none}}
+  header{position:relative;padding:104px 0 96px;overflow:hidden;
+    background:radial-gradient(800px 460px at 85% 10%,rgba(46,123,255,.22),transparent 60%),var(--navy)}
+  .streak{position:absolute;height:2px;background:linear-gradient(90deg,transparent,var(--blue),transparent);opacity:.5;animation:dash 5s linear infinite}
+  .s1{top:24%;width:60%;left:-60%;animation-delay:0s}
+  .s2{top:52%;width:45%;left:-45%;animation-delay:1.4s}
+  .s3{top:76%;width:70%;left:-70%;animation-delay:2.6s}
+  @keyframes dash{to{left:110%}}
+  header .wrap{position:relative}
+  .tag{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);background:rgba(46,123,255,.1);
+    color:var(--lime);font-weight:700;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;padding:8px 16px;border-radius:999px;margin-bottom:26px}
+  header h1{font-size:clamp(2.7rem,7.4vw,5.6rem);font-weight:800}
+  header h1 span{background:linear-gradient(90deg,var(--blue),var(--lime));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{max-width:600px;margin:24px 0 40px;color:var(--mut);font-size:1.08rem}
+  .cta{display:inline-flex;gap:10px;background:var(--lime);color:#0b1430;font-weight:700;font-size:.9rem;
+    padding:16px 32px;border-radius:12px;transition:.2s}
+  .cta:hover{transform:translateY(-3px);box-shadow:0 14px 34px -14px rgba(215,255,62,.6)}
+  .reveal{opacity:0;transform:translateY(24px);animation:rise .95s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .stats .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:8px}
+  .st{background:var(--navy2);border:1px solid var(--line);border-radius:16px;padding:26px 22px}
+  .st b{font-family:"Sora";font-weight:800;font-size:2rem;display:block;color:#fff}
+  .st small{color:var(--mut);font-size:.82rem}
+  @media(max-width:820px){.stats .wrap{grid-template-columns:repeat(2,1fr)}}
+  section{padding:92px 0}
+  .eyebrow{color:var(--blue);font-size:.76rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin-bottom:12px}
+  h2{font-size:clamp(2rem,4.6vw,3.2rem);margin-bottom:16px}
+  .lead{color:var(--mut);max-width:620px;font-size:1.04rem}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
+  @media(max-width:880px){.grid3{grid-template-columns:1fr}}
+  .card{background:var(--navy2);border:1px solid var(--line);border-radius:18px;padding:32px;transition:.25s}
+  .card:hover{border-color:var(--blue);transform:translateY(-5px)}
+  .ic{width:46px;height:46px;border-radius:12px;background:rgba(46,123,255,.16);color:var(--blue);display:grid;place-items:center;margin-bottom:18px}
+  .card h3{font-size:1.22rem;margin-bottom:8px}
+  .card p{color:var(--mut);font-size:.95rem}
+  .marq{overflow:hidden;border-block:1px solid var(--line);background:var(--navy2);padding:20px 0}
+  .track{display:flex;gap:60px;width:max-content;animation:scroll 18s linear infinite;font-family:"Sora";font-weight:700;color:#4a5c8a;font-size:1.1rem;white-space:nowrap}
+  @keyframes scroll{to{transform:translateX(-50%)}}
+  .cover{background:linear-gradient(120deg,var(--navy2),#16224f);border:1px solid var(--line);border-radius:26px;
+    padding:64px 56px;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:center}
+  @media(max-width:860px){.cover{grid-template-columns:1fr;padding:40px 32px}}
+  .bignum{font-family:"Sora";font-weight:800;font-size:clamp(3rem,7vw,5.5rem);
+    background:linear-gradient(90deg,var(--blue),var(--lime));-webkit-background-clip:text;background-clip:text;color:transparent}
+  footer{background:#070d20;border-top:1px solid var(--line);padding:62px 0 0}
+  .fgrid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:34px;padding-bottom:46px}
+  @media(max-width:760px){.fgrid{grid-template-columns:1fr}}
+  footer h4{font-family:"Sora";color:var(--lime);font-size:.95rem;margin-bottom:14px}
+  footer p,footer a{display:block;font-size:.9rem;margin-bottom:7px;color:var(--mut)}
+  .infra{border-top:1px solid var(--line);background:#04081a;font-family:"Manrope";font-size:.82rem}
+  .infra .wrap{display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;padding:15px 30px;color:#7b8ab3}
+  .badge{background:var(--lime);color:#0b1430;padding:3px 11px;border-radius:6px;font-weight:700}
+  .dot{width:8px;height:8px;border-radius:50%;background:#7dffb0;display:inline-block;margin-right:7px;box-shadow:0 0 8px #7dffb0;animation:bl 1.6s infinite}
+  @keyframes bl{50%{opacity:.35}}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <div class="brand">Rota<span class="ar">Express</span>
+    <svg width="22" viewBox="0 0 24 24" fill="none" stroke="#d7ff3e" stroke-width="2.4"><path d="M3 12h15M13 6l7 6-7 6"/></svg>
+  </div>
+  <div class="nav-links"><a href="#op">Operação</a><a href="#tec">Tecnologia</a><a href="#cob">Cobertura</a><a href="#contato">Contato</a></div>
+</div></nav>
+
+<header>
+  <div class="streak s1"></div><div class="streak s2"></div><div class="streak s3"></div>
+  <div class="wrap reveal">
+    <span class="tag">⚡ Fulfillment & última milha · Desde 2008</span>
+    <h1>Seu pedido,<br><span>na velocidade certa.</span></h1>
+    <p class="lede">Operadora logística que cresceu 380% com o e-commerce: armazéns automatizados, integração com marketplaces e visão em tempo real da operação.</p>
+    <a href="#tec" class="cta">Ver a operação →</a>
+  </div>
+</header>
+
+<div class="stats"><div class="wrap">
+  <div class="st"><b>7</b><small>centros de distribuição</small></div>
+  <div class="st"><b>2.200</b><small>colaboradores</small></div>
+  <div class="st"><b>18</b><small>marketplaces integrados</small></div>
+  <div class="st"><b>R$ 950mi</b><small>receita 2024</small></div>
+</div></div>
+
+<div class="marq"><div class="track">
+  <span>MARKETPLACES</span><span>· 40+ TRANSPORTADORAS</span><span>· CONTROL TOWER</span><span>· AGVs</span><span>· SORTERS</span><span>· D2C</span>
+  <span>MARKETPLACES</span><span>· 40+ TRANSPORTADORAS</span><span>· CONTROL TOWER</span><span>· AGVs</span><span>· SORTERS</span><span>· D2C</span>
+</div></div>
+
+<section id="op"><div class="wrap">
+  <div class="eyebrow">Operação</div>
+  <h2>Armazéns que pensam rápido</h2>
+  <p class="lead">Sete centros de distribuição no Sudeste, Nordeste e Sul, automatizados para absorver os picos do varejo digital sem perder o ritmo.</p>
+  <div class="grid3">
+    <div class="card"><div class="ic"><svg width="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 7l9-4 9 4-9 4zM3 9l9 4 9-4v8l-9 4-9-4z"/></svg></div><h3>180 AGVs</h3><p>Veículos autônomos movimentando carga em 4 dos 7 CDs.</p></div>
+    <div class="card"><div class="ic"><svg width="22" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v4H4zm0 6h16v4H4zm0 6h16v4H4z"/></svg></div><h3>Sorters de alta velocidade</h3><p>Triagem automática em 3 centros para entrega mais rápida.</p></div>
+    <div class="card"><div class="ic"><svg width="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 5h-2v6l5 3 1-1.7-4-2.3z"/></svg></div><h3>Control tower</h3><p>Torre de controle com dados em tempo real de ponta a ponta.</p></div>
+  </div>
+</div></section>
+
+<section id="tec" style="background:var(--navy2)"><div class="wrap">
+  <div class="cover">
+    <div>
+      <div class="eyebrow">Tecnologia</div>
+      <h2>Integração que conecta tudo</h2>
+      <p class="lead">WMS moderno, APIs com 18 marketplaces e mais de 40 transportadoras. Quando o varejo acelera, a tecnologia precisa acelerar junto.</p>
+    </div>
+    <div style="text-align:right"><div class="bignum">+380%</div><p style="color:var(--mut)">crescimento 2020 → 2024</p></div>
+  </div>
+</div></section>
+
+<section id="cob"><div class="wrap">
+  <div class="eyebrow">Cobertura</div>
+  <h2>Presença nacional</h2>
+  <div class="grid3">
+    <div class="card"><h3 style="color:var(--lime)">4 CDs</h3><p>Região Sudeste — coração da operação.</p></div>
+    <div class="card"><h3 style="color:var(--lime)">2 CDs</h3><p>Região Nordeste — expansão acelerada.</p></div>
+    <div class="card"><h3 style="color:var(--lime)">1 CD</h3><p>Região Sul — atendimento integrado.</p></div>
+  </div>
+</div></section>
+
+<footer id="contato">
+  <div class="wrap fgrid">
+    <div><h4>RotaExpress</h4><p>Operadora logística brasileira de fulfillment e última milha para marketplaces e marcas D2C.</p><p>Operação nacional · 7 centros de distribuição</p></div>
+    <div><h4>Soluções</h4><a>Fulfillment</a><a>Última milha</a><a>Integração marketplace</a></div>
+    <div><h4>Contato</h4><a>comercial@rotaexpress.exemplo</a><a>+55 11 0000-0000</a></div>
+  </div>
+  <div class="infra"><div class="wrap">
+    <span><span class="dot"></span>Servido por <span class="badge" id="host">web-srv-01</span></span>
+    <span>Uptime: <span id="up">00:00:00</span></span>
+    <span>RotaExpress · ambiente de demonstração</span>
+  </div></div>
+</footer>
+
+<script>
+  /* >>> ALUNO: altere INSTANCE_LABEL em CADA instância EC2 para visualizar o Auto Scaling pelo balanceador <<< */
+  const INSTANCE_LABEL = "web-srv-01";
+  document.getElementById("host").textContent = INSTANCE_LABEL;
+  document.title = "RotaExpress · " + INSTANCE_LABEL;
+  const t0=Date.now();
+  setInterval(()=>{const s=(Date.now()-t0)/1000|0;
+    document.getElementById("up").textContent=
+    [s/3600|0,s/60%60|0,s%60].map(n=>String(n).padStart(2,'0')).join(':');},1000);
+</script>
+</body>
+</html>
